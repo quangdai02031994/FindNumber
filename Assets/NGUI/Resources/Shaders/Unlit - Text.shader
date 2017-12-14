@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "Unlit/Text"
 {
 	Properties
@@ -14,6 +16,7 @@ Shader "Unlit/Text"
 			"Queue" = "Transparent"
 			"IgnoreProjector" = "True"
 			"RenderType" = "Transparent"
+			"DisableBatching" = "True"
 		}
 
 		Cull Off
@@ -39,7 +42,7 @@ Shader "Unlit/Text"
 
 				struct v2f
 				{
-					float4 vertex : POSITION;
+					float4 vertex : SV_POSITION;
 					half4 color : COLOR;
 					float2 texcoord : TEXCOORD0;
 				};
@@ -50,13 +53,13 @@ Shader "Unlit/Text"
 				v2f vert (appdata_t v)
 				{
 					v2f o;
-					o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
+					o.vertex = UnityObjectToClipPos(v.vertex);
 					o.texcoord = v.texcoord;
 					o.color = v.color;
 					return o;
 				}
 
-				half4 frag (v2f i) : COLOR
+				half4 frag (v2f i) : SV_Target
 				{
 					half4 col = i.color;
 					col.a *= tex2D(_MainTex, i.texcoord).a;
@@ -73,6 +76,7 @@ Shader "Unlit/Text"
 			"Queue"="Transparent"
 			"IgnoreProjector"="True"
 			"RenderType"="Transparent"
+			"DisableBatching" = "True"
 		}
 		
 		Lighting Off

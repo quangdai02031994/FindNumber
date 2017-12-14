@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "Unlit/Premultiplied Colored"
 {
 	Properties
@@ -14,6 +16,7 @@ Shader "Unlit/Premultiplied Colored"
 			"Queue" = "Transparent"
 			"IgnoreProjector" = "True"
 			"RenderType" = "Transparent"
+			"DisableBatching" = "True"
 		}
 
 		Pass
@@ -24,7 +27,7 @@ Shader "Unlit/Premultiplied Colored"
 			AlphaTest Off
 			Fog { Mode Off }
 			Offset -1, -1
-			ColorMask RGB
+			//ColorMask RGB
 			Blend One OneMinusSrcAlpha
 		
 			CGPROGRAM
@@ -44,7 +47,7 @@ Shader "Unlit/Premultiplied Colored"
 
 			struct v2f
 			{
-				float4 vertex : POSITION;
+				float4 vertex : SV_POSITION;
 				float2 texcoord : TEXCOORD0;
 				half4 color : COLOR;
 			};
@@ -52,13 +55,13 @@ Shader "Unlit/Premultiplied Colored"
 			v2f vert (appdata_t v)
 			{
 				v2f o;
-				o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
+				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.texcoord = v.texcoord;
 				o.color = v.color;
 				return o;
 			}
 
-			half4 frag (v2f IN) : COLOR
+			half4 frag (v2f IN) : SV_Target
 			{
 				half4 col = tex2D(_MainTex, IN.texcoord) * IN.color;
 				return col;
@@ -76,6 +79,7 @@ Shader "Unlit/Premultiplied Colored"
 			"Queue" = "Transparent"
 			"IgnoreProjector" = "True"
 			"RenderType" = "Transparent"
+			"DisableBatching" = "True"
 		}
 		
 		Pass
@@ -86,7 +90,7 @@ Shader "Unlit/Premultiplied Colored"
 			AlphaTest Off
 			Fog { Mode Off }
 			Offset -1, -1
-			ColorMask RGB
+			//ColorMask RGB
 			Blend One OneMinusSrcAlpha 
 			ColorMaterial AmbientAndDiffuse
 			

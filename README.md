@@ -1,2 +1,0 @@
-# FindNumber
-Game tìm số

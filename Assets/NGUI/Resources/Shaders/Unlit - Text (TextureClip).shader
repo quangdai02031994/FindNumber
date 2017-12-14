@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "Hidden/Unlit/Text (TextureClip)" 
 {
 	Properties
@@ -14,6 +16,7 @@ Shader "Hidden/Unlit/Text (TextureClip)"
 			"Queue" = "Transparent"
 			"IgnoreProjector" = "True"
 			"RenderType" = "Transparent"
+			"DisableBatching" = "True"
 		}
 		
 		Pass
@@ -44,7 +47,7 @@ Shader "Hidden/Unlit/Text (TextureClip)"
 
 			struct v2f
 			{
-				float4 vertex : POSITION;
+				float4 vertex : SV_POSITION;
 				float2 texcoord : TEXCOORD0;
 				float2 clipUV : TEXCOORD1;
 				half4 color : COLOR;
@@ -53,14 +56,14 @@ Shader "Hidden/Unlit/Text (TextureClip)"
 			v2f vert (appdata_t v)
 			{
 				v2f o;
-				o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
+				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.color = v.color;
 				o.texcoord = v.texcoord;
 				o.clipUV = (v.vertex.xy * _ClipRange0.zw + _ClipRange0.xy) * 0.5 + float2(0.5, 0.5);
 				return o;
 			}
 
-			half4 frag (v2f IN) : COLOR
+			half4 frag (v2f IN) : SV_Target
 			{
 				half4 col = IN.color;
 				col.a *= tex2D(_MainTex, IN.texcoord).a * tex2D(_ClipTex, IN.clipUV).a;
